@@ -1,10 +1,20 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+
+import { CategoriesModule } from './modules/categories/categories.module';
+import { DatabaseModule } from './database/database.module';
+import { AuthMiddleware } from './auth/middleware/auth.middleware';
+import { TiendaNubeModule } from './services/tienda-nube/tienda-nube.module';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule.forRoot(), DatabaseModule, CategoriesModule, TiendaNubeModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}
