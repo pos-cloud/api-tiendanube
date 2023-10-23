@@ -7,5 +7,6 @@ import { TiendaNubeService } from './services/tienda-nube.service';
   // controllers: [TiendaNubeController],
   imports: [HttpModule],
   providers: [TiendaNubeService],
+  exports: [TiendaNubeService],
 })
 export class TiendaNubeModule {}

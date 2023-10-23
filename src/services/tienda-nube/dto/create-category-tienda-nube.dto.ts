@@ -6,5 +6,9 @@ export class CreateCategoryTiendaNubeDto {
 
   @IsOptional()
   @IsNumber()
-  parent: number;
+  parent?: number;
+
+  @IsObject()
+  @IsOptional()
+  description?: Object;
 }
