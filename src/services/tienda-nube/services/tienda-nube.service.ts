@@ -5,6 +5,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map } from 'rxjs';
 import { CreateCategoryTiendaNubeDto } from '../dto/create-category-tienda-nube.dto';
 import { CreateProductTiendaNubeDTO } from '../dto/create-product-tienda-nube.dto';
+import { UpdateVariantTiendaNubeDto } from '../dto/update-variant-tienda-nube.dto';
 
 @Injectable()
 export class TiendaNubeService {
@@ -77,6 +78,29 @@ export class TiendaNubeService {
     return data;
   }
 
+  async updateProductFirstVariant(
+    tiendaNubeAccesstoken: string,
+    tiendaNubeUserId: string,
+    productId: string,
+    variantId: string,
+    updateVariant: UpdateVariantTiendaNubeDto,
+  ) {
+    const data = await firstValueFrom(
+      this.httpService
+        .put(
+          `${this.tiendaNubeUrI}/${tiendaNubeUserId}/products/${productId}/variants/${variantId}`,
+          updateVariant,
+          {
+            headers: {
+              Authentication: `bearer ${tiendaNubeAccesstoken}`,
+            },
+          },
+        )
+        .pipe(map((resp) => resp.data)),
+    );
+
+    return data;
+  }
   findAll() {
     return `This action returns all tiendaNube`;
   }

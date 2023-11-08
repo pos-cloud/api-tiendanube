@@ -6,6 +6,7 @@ import { TiendaNubeService } from 'src/services/tienda-nube/services/tienda-nube
 import { CategoriesService } from 'src/modules/categories/services/categories.service';
 import { VariantProduct } from './variant.service';
 import { CreateProductTiendaNubeDTO } from 'src/services/tienda-nube/dto/create-product-tienda-nube.dto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class ProductsService {
@@ -32,7 +33,11 @@ export class ProductsService {
     );
     // console.log(foundArticle);
 
-    if (!foundArticle) {
+    if (
+      !foundArticle ||
+      foundArticle.operationType == 'D' ||
+      (foundArticle.type as string).toLocaleLowerCase() != 'final'
+    ) {
       throw new BadRequestException(` Article with id${productId} not found`);
     }
 
@@ -47,13 +52,13 @@ export class ProductsService {
       },
     };
 
-    if ((foundArticle.type as string).toLocaleLowerCase() == 'final') {
-      const result =
-        await this.productVariantService.getProductVariantsPropertyNames(
-          foundArticle._id,
-        );
-      dataNewProductTiendaNube['attributes'] = result.map((e) => ({ es: e }));
-    }
+    const resultVariantName =
+      await this.productVariantService.getProductVariantsPropertyNames(
+        foundArticle._id,
+      );
+    dataNewProductTiendaNube['attributes'] = resultVariantName.map((e) => ({
+      es: e,
+    }));
 
     if (foundArticle.category) {
       const foundCategory = this.categoryService.findOneCategoryDb(
@@ -73,8 +78,27 @@ export class ProductsService {
       tiendaNubeAccesstoken,
       tiendaNubeUserId,
     );
+
+    const stockCollection =
+      this.databaseService.getCollection('article-stocks');
+    const stockFound = await stockCollection.findOne({
+      operationType: { $ne: 'D' },
+      article: new ObjectId(productId),
+    });
     console.log('object');
-    console.log(result);
+    console.log(stockFound);
+
+    await this.tiendaNubeService.updateProductFirstVariant(
+      tiendaNubeAccesstoken,
+      tiendaNubeUserId,
+      result.id,
+      result.variants[0].id,
+      {
+        stock: stockFound.realStock,
+        price: foundArticle.salePrice,
+      },
+    );
+
     return result;
   }
 
