@@ -4,6 +4,7 @@ import { UpdateTiendaNubeDto } from '../dto/update-tienda-nube.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map } from 'rxjs';
 import { CreateCategoryTiendaNubeDto } from '../dto/create-category-tienda-nube.dto';
+import { CreateProductTiendaNubeDTO } from '../dto/create-product-tienda-nube.dto';
 
 @Injectable()
 export class TiendaNubeService {
@@ -51,6 +52,29 @@ export class TiendaNubeService {
       );
       return data;
     } catch (err) {}
+  }
+
+  async createProduct(
+    createProductTiendaNube: CreateProductTiendaNubeDTO,
+    tiendaNubeAccesstoken: string,
+    tiendaNubeUserId: string,
+  ) {
+    console.log(createProductTiendaNube);
+    const data = await firstValueFrom(
+      this.httpService
+        .post(
+          `${this.tiendaNubeUrI}/${tiendaNubeUserId}/products`,
+          createProductTiendaNube,
+          {
+            headers: {
+              Authentication: `bearer ${tiendaNubeAccesstoken}`,
+            },
+          },
+        )
+        .pipe(map((resp) => resp.data)),
+    );
+    console.log(data);
+    return data;
   }
 
   findAll() {

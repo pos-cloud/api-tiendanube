@@ -9,5 +9,6 @@ import { HttpModule } from '@nestjs/axios';
   imports: [DatabaseModule, TiendaNubeModule, HttpModule],
   controllers: [CategoriesController],
   providers: [CategoriesService],
+  exports: [CategoriesService]
 })
 export class CategoriesModule {}

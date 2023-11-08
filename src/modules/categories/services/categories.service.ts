@@ -3,15 +3,12 @@ import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { DatabaseService } from 'src/database/services/database.service';
 import { TiendaNubeService } from 'src/services/tienda-nube/services/tienda-nube.service';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly tiendaNubeService: TiendaNubeService,
-    private readonly httpService: HttpService,
   ) {}
 
   async create(
@@ -71,6 +68,15 @@ export class CategoriesService {
 
   findAll() {
     return `This action returns all categories`;
+  }
+  async findOneCategoryDb(categoryId: string) {
+    const foundCategory = await this.databaseService.getDocumentById(
+      'categories',
+      categoryId,
+    );
+    if (!foundCategory) {
+      throw new BadRequestException(` Category with id${categoryId} not found`);
+    }
   }
 
   findOne(id: number) {
