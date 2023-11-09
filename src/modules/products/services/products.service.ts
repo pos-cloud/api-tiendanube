@@ -24,7 +24,7 @@ export class ProductsService {
     await this.databaseService.initConnection(database);
     const { tiendaNubeAccesstoken, tiendaNubeUserId } =
       await this.databaseService.getCredentialsTiendaNube();
-    console.log(tiendaNubeAccesstoken, tiendaNubeUserId);
+    // console.log(tiendaNubeAccesstoken, tiendaNubeUserId);
     const foundCollection = this.databaseService.getCollection('articles');
 
     const foundArticle = await this.databaseService.getDocumentById(
@@ -44,7 +44,7 @@ export class ProductsService {
     const dataNewProductTiendaNube = {
       images: [
         {
-          src: 'https://media.licdn.com/dms/image/D4D10AQH5CkhbZ0M2WQ/image-shrink_800/0/1690462780381/EMEA-State-Mobile-Exp_1200x628_CTA02png?e=1700010000&v=beta&t=Dh-QsGta5tPYthTEE2WSwK6QZU68AT_AYbFOers3GXE',
+          src: foundArticle.picture,
         },
       ],
       name: {
@@ -85,8 +85,6 @@ export class ProductsService {
       operationType: { $ne: 'D' },
       article: new ObjectId(productId),
     });
-    console.log('object');
-    console.log(stockFound);
 
     await this.tiendaNubeService.updateProductFirstVariant(
       tiendaNubeAccesstoken,
@@ -94,8 +92,8 @@ export class ProductsService {
       result.id,
       result.variants[0].id,
       {
-        stock: stockFound.realStock,
-        price: foundArticle.salePrice,
+        stock: stockFound.realStock || null,
+        price: foundArticle.salePrice || null,
       },
     );
 
