@@ -36,7 +36,7 @@ export class TiendaNubeService {
     return data;
   }
   async getCategoryId(
-    categoryId: string,
+    categoryId: string, 
     tiendaNubeAccesstoken: string,
     tiendaNubeUserId: string,
   ) {
