@@ -17,7 +17,7 @@ export class VariantProduct {
         articleParent: new ObjectId(productId),
       })
       .toArray();
-
+   
     console.log('object');
     const arrrayTypeProduct = variantProducts.map((element) =>
       element.type.toString(),

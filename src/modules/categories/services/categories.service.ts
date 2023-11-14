@@ -20,7 +20,7 @@ export class CategoriesService {
       throw new BadRequestException(`Database is required `);
     }
     await this.databaseService.initConnection(database);
-    const { tiendaNubeAccesstoken, tiendaNubeUserId } =
+    const { token, userID  } =
       await this.databaseService.getCredentialsTiendaNube();
 
     const foundCollection = this.databaseService.getCollection('categories');
@@ -33,11 +33,12 @@ export class CategoriesService {
     if (!foundCategory) {
       throw new BadRequestException(` Category with id${categoryId} not found`);
     }
+
     if (foundCategory.tiendaNubeId) {
       const foundCategoryTiendaMia = await this.tiendaNubeService.getCategoryId(
         foundCategory.tiendaNubeId,
-        tiendaNubeAccesstoken,
-        tiendaNubeUserId,
+        token,
+        userID 
       );
       if (foundCategoryTiendaMia) {
         return foundCategoryTiendaMia;
@@ -50,8 +51,8 @@ export class CategoriesService {
           es: foundCategory.description,
         },
       },
-      tiendaNubeAccesstoken,
-      tiendaNubeUserId,
+      token,
+      userID
     );
 
     await foundCollection.updateOne(
@@ -62,7 +63,6 @@ export class CategoriesService {
         },
       },
     );
-
     return categoryTiendaNube;
   }
 

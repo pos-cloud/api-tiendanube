@@ -77,10 +77,10 @@ export class DatabaseService {
     // console.log(itemCollection)
     const documents = await itemCollection.find({}).toArray();
 
-    const { tiendaNubeAccesstoken, tiendaNubeUserId } = documents[0];
+    const { token, userID } = documents[0].tiendaNube;
     return {
-      tiendaNubeAccesstoken,
-      tiendaNubeUserId,
+      token,
+      userID,
     };
   }
 }
