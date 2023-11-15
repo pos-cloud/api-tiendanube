@@ -22,29 +22,29 @@ export class ProductsService {
       throw new BadRequestException(`Database is required `);
     }
     await this.databaseService.initConnection(database);
-    const { tiendaNubeAccesstoken, tiendaNubeUserId } =
+    const { token, userID } =
       await this.databaseService.getCredentialsTiendaNube();
-    console.log(tiendaNubeAccesstoken, tiendaNubeUserId);
+   // console.log(token, appID);
     const foundCollection = this.databaseService.getCollection('articles');
 
     const foundArticle = await this.databaseService.getDocumentById(
       'articles',
       productId,
     );
-    // console.log(foundArticle);
+  //  console.log(foundArticle);
 
     if (
       !foundArticle ||
       foundArticle.operationType == 'D' ||
       (foundArticle.type as string).toLocaleLowerCase() != 'final'
-    ) {
-      throw new BadRequestException(` Article with id${productId} not found`);
+    ){
+      throw new BadRequestException(` Article with id ${productId} not found`);
     }
 
     const dataNewProductTiendaNube = {
       images: [
         {
-          src: 'https://media.licdn.com/dms/image/D4D10AQH5CkhbZ0M2WQ/image-shrink_800/0/1690462780381/EMEA-State-Mobile-Exp_1200x628_CTA02png?e=1700010000&v=beta&t=Dh-QsGta5tPYthTEE2WSwK6QZU68AT_AYbFOers3GXE',
+          src: foundArticle.picture,
         },
       ],
       name: {
@@ -64,19 +64,20 @@ export class ProductsService {
       const foundCategory = this.categoryService.findOneCategoryDb(
         foundArticle.category,
       );
+
       const foundCategoryTiendaMia = await this.categoryService.create(
         database,
         foundArticle.category,
       );
-
+  
       if (foundCategoryTiendaMia) {
         dataNewProductTiendaNube['categories'] = [foundCategoryTiendaMia.id];
       }
     }
     const result = await this.tiendaNubeService.createProduct(
       dataNewProductTiendaNube as CreateProductTiendaNubeDTO,
-      tiendaNubeAccesstoken,
-      tiendaNubeUserId,
+      token,
+      userID,
     );
 
     const stockCollection =
@@ -85,17 +86,15 @@ export class ProductsService {
       operationType: { $ne: 'D' },
       article: new ObjectId(productId),
     });
-    console.log('object');
-    console.log(stockFound);
 
     await this.tiendaNubeService.updateProductFirstVariant(
-      tiendaNubeAccesstoken,
-      tiendaNubeUserId,
+      token,
+      userID,
       result.id,
       result.variants[0].id,
       {
-        stock: stockFound.realStock,
-        price: foundArticle.salePrice,
+        stock: stockFound.realStock || null,
+        price: foundArticle.salePrice || null,
       },
     );
 

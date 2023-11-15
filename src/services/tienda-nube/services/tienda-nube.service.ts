@@ -18,7 +18,8 @@ export class TiendaNubeService {
   ) {
     // const { data: userFacebook }: any = await firstValueFrom(
     //   this.httpService.get(apiUrl),
-    // );
+    // )
+    console.log( `${this.tiendaNubeUrI}/admin/categories`,   createTiendaNubeDto  )
     const data = await firstValueFrom(
       this.httpService
         .post(
@@ -36,7 +37,7 @@ export class TiendaNubeService {
     return data;
   }
   async getCategoryId(
-    categoryId: string,
+    categoryId: string, 
     tiendaNubeAccesstoken: string,
     tiendaNubeUserId: string,
   ) {
@@ -60,7 +61,6 @@ export class TiendaNubeService {
     tiendaNubeAccesstoken: string,
     tiendaNubeUserId: string,
   ) {
-    console.log(createProductTiendaNube);
     const data = await firstValueFrom(
       this.httpService
         .post(
@@ -74,7 +74,6 @@ export class TiendaNubeService {
         )
         .pipe(map((resp) => resp.data)),
     );
-    console.log(data);
     return data;
   }
 

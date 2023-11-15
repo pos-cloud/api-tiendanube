@@ -1,0 +1,13 @@
+name: donweb-Prod
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: prod
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker rm -f api-tiendanube
+      - run: docker build -t api-poscloud -f Dockerfile.prod .
+      - run: docker run -v /home:/home --restart unless-stopped --net host --name api-tiendanube -d -it -p 305:305 api-tiendanube
