@@ -51,10 +51,11 @@ export class ProductsService {
       },
     };
 
-    const resultVariantName =
+     const resultVariantName =
       await this.productVariantService.getProductVariantsPropertyNames(
         foundArticle._id,
       );
+
     dataNewProductTiendaNube['attributes'] = resultVariantName.map((e) => ({
       es: e,
     }));
@@ -92,7 +93,7 @@ export class ProductsService {
       result.id,
       result.variants[0].id,
       {
-        stock: stockFound.realStock || null,
+        stock: stockFound && stockFound > 0 ? stockFound.realStock : 0,
         price: foundArticle.salePrice || null,
       },
     );
