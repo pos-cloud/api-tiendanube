@@ -16,4 +16,8 @@ export class CreateProductTiendaNubeDTO {
   @IsObject()
   @IsOptional()
   attributes: Object | any;
+
+  @IsObject()
+  @IsOptional()
+  description: Object | any;
 }

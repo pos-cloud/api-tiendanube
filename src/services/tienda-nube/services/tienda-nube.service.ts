@@ -6,6 +6,7 @@ import { firstValueFrom, map } from 'rxjs';
 import { CreateCategoryTiendaNubeDto } from '../dto/create-category-tienda-nube.dto';
 import { CreateProductTiendaNubeDTO } from '../dto/create-product-tienda-nube.dto';
 import { UpdateVariantTiendaNubeDto } from '../dto/update-variant-tienda-nube.dto';
+import { UpdateProductTiendaNubeDto } from '../dto/update-product-tienda-nube.dto';
 
 @Injectable()
 export class TiendaNubeService {
@@ -19,7 +20,7 @@ export class TiendaNubeService {
     // const { data: userFacebook }: any = await firstValueFrom(
     //   this.httpService.get(apiUrl),
     // )
-    console.log( `${this.tiendaNubeUrI}/admin/categories`,   createTiendaNubeDto  )
+    console.log(`${this.tiendaNubeUrI}/admin/categories`, createTiendaNubeDto);
     const data = await firstValueFrom(
       this.httpService
         .post(
@@ -37,7 +38,7 @@ export class TiendaNubeService {
     return data;
   }
   async getCategoryId(
-    categoryId: string, 
+    categoryId: string,
     tiendaNubeAccesstoken: string,
     tiendaNubeUserId: string,
   ) {
@@ -98,6 +99,53 @@ export class TiendaNubeService {
         .pipe(map((resp) => resp.data)),
     );
 
+    return data;
+  }
+
+  
+  async updateProduct(
+    tiendaNubeAccesstoken: string,
+    tiendaNubeUserId: string,
+    productId: string,
+    updateProductDto: UpdateProductTiendaNubeDto,
+  ) {
+    const data = await firstValueFrom(
+      this.httpService
+        .put(
+          `${this.tiendaNubeUrI}/${tiendaNubeUserId}/products/${productId}`,
+          updateProductDto,
+          {
+            headers: {
+              Authentication: `bearer ${tiendaNubeAccesstoken}`,
+            },
+          },
+        )
+        .pipe(map((resp) => resp.data)),
+    );
+
+    return data;
+  }
+
+  async updatePrincipalImageOfProduct(
+    url: string,
+    productId: string,
+    imageId: string,
+    tiendaNubeAccesstoken: string,
+    tiendaNubeUserId: string,
+  ) {
+    const data = await firstValueFrom(
+      this.httpService
+        .put(
+          `${this.tiendaNubeUrI}/${tiendaNubeUserId}/products/${productId}/images/${imageId}`,
+          { src: url },
+          {
+            headers: {
+              Authentication: `bearer ${tiendaNubeAccesstoken}`,
+            },
+          },
+        )
+        .pipe(map((resp) => resp.data)),
+    );
     return data;
   }
   findAll() {
