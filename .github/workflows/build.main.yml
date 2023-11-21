@@ -1,13 +1,39 @@
-name: donweb-Prod
+name: Deploy Prod to DonWeb
+
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: prod
+
+    env:
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      APIV1: ${{ secrets.APIV1 }}
+      APIV2: ${{ secrets.APIV2 }}
+      PORT: ${{ secrets.PORT }}
+
     steps:
-      - uses: actions/checkout@v3
-      - run: docker rm -f api-tiendanube
-      - run: docker build -t api-poscloud -f Dockerfile.prod .
-      - run: docker run -v /home:/home --restart unless-stopped --net host --name api-tiendanube -d -it -p 305:305 api-tiendanube
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Stop and remove existing container
+        run: docker rm -f api-tienda-nube || true
+
+      - name: Build Docker image
+        run: docker build -t api-tienda-nube -f Dockerfile.prod .
+
+      - name: Run Docker container
+        run: |
+          docker run \
+            -e TOKEN_SECRET=$TOKEN_SECRET \
+            -e APIV1=$APIV1 \
+            -e APIV2=$APIV2 \
+            -e PORT=$PORT \s
+            -v /home:/home \
+            --restart unless-stopped \
+            --net host \
+            --name api-tienda-nube \
+            -d -it -p 302:302 api-tienda-nube
